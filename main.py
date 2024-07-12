@@ -10,22 +10,27 @@ def main():
 
     accessToken = requestToken(clientId, clientSecret)
 
-    url = 'https://sandbox-api.digikey.com/products/v4/search/P5555-ND/productdetails'
+    url = 'https://sandbox-api.digikey.com/products/v4/search/keyword'
 
     auth = 'Bearer ' + accessToken
 
     headers = {
+        'accept': 'application/json',
         'Authorization': auth,
-        'X-DIGIKEY-Client-Id': clientId
-    }
-
-    data = {
+        'X-DIGIKEY-Client-Id': clientId,
         'X-DIGIKEY-Locale-Site': 'US',
         'X-DIGIKEY-Locale-Language': 'en',
         'X-DIGIKEY-Locale-Currency': 'USD',
+        'Content-Type': 'application/json'
     }
 
-    r = requests.get(url, data=data, headers=headers)
+    data = {
+        "Keywords": "100k",
+        "Limit": 1,
+        "Offset": 0,
+    }
+
+    r = requests.post(url, json=data, headers=headers)
     print(r.json())
 
 main()
