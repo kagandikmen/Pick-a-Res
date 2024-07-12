@@ -38,12 +38,30 @@ class ApiAccess(QObject):
         self.resistorData = requests.post(self.url, json=self.data, headers=self.headers)
 
     @Slot(int)
-    def onResistorCategorySignal(self, arg):
+    def onResistorCategoryChanged(self, arg):
         self.data["FilterOptionsRequest"]["CategoryFilter"] = [
             {
                 "Id": str(arg)
             }     
         ]
+
+    @Slot(int)
+    def onInStockSelectionChanged(self, arg):
+        self.shouldBeOnStock = arg
+
+    @Slot(float)
+    def onRelationInputChanged(self,arg):
+        self.relation = arg
+
+    @Slot(str)
+    def onApproxValueInputChanged(self, arg):
+        self.approxValue = arg
+
+    @Slot(bool)
+    def onDoesNotMatterButtonToggled(self, arg):
+        self.approxValueDoesNotMatter = arg
+
+    @Slot()
+    def onSearchInitiated(self):
         self.access()
-        
-        
+        print(self.resistorData.json())

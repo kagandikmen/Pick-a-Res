@@ -16,7 +16,6 @@ class Ui_MainWindow(QObject):
         MainWindow.resize(1004, 600)
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        
         self.resistorCategoriesList = QtWidgets.QListWidget(parent=self.centralwidget)
         self.resistorCategoriesList.setGeometry(QtCore.QRect(20, 50, 241, 131))
         self.resistorCategoriesList.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
@@ -37,8 +36,96 @@ class Ui_MainWindow(QObject):
         self.resistorCategoriesLabel.setGeometry(QtCore.QRect(20, 20, 151, 20))
         self.resistorCategoriesLabel.setObjectName("resistorCategoriesLabel")
 
-        self.resistorCategoriesList.itemSelectionChanged.connect(self.resistorCategorySelectionToCategoryCode)
-        
+        #####
+        self.resistorCategoriesList.itemSelectionChanged.connect(self.resistorCategoryChanged)
+
+
+        self.inStockCheckBox = QtWidgets.QCheckBox(parent=self.centralwidget)
+        self.inStockCheckBox.setGeometry(QtCore.QRect(30, 190, 93, 26))
+        self.inStockCheckBox.setChecked(True)
+        self.inStockCheckBox.setObjectName("inStockCheckBox")
+
+        #####
+        self.inStockCheckBox.stateChanged.connect(self.inStockSelectionChanged)
+
+        self.relationInputBox = QtWidgets.QDoubleSpinBox(parent=self.centralwidget)
+        self.relationInputBox.setGeometry(QtCore.QRect(410, 90, 81, 41))
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.relationInputBox.setFont(font)
+        self.relationInputBox.setObjectName("relationInputBox")
+
+        #####
+        self.relationInputBox.valueChanged.connect(self.relationInputChanged)
+
+        self.relationInputLabel = QtWidgets.QLabel(parent=self.centralwidget)
+        self.relationInputLabel.setGeometry(QtCore.QRect(290, 100, 101, 20))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.relationInputLabel.setFont(font)
+        self.relationInputLabel.setObjectName("relationInputLabel")
+        self.voltageDividerLine1 = QtWidgets.QFrame(parent=self.centralwidget)
+        self.voltageDividerLine1.setGeometry(QtCore.QRect(530, 55, 20, 40))
+        self.voltageDividerLine1.setFrameShape(QtWidgets.QFrame.Shape.VLine)
+        self.voltageDividerLine1.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        self.voltageDividerLine1.setObjectName("voltageDividerLine1")
+        self.voltageDividerLine2 = QtWidgets.QFrame(parent=self.centralwidget)
+        self.voltageDividerLine2.setGeometry(QtCore.QRect(530, 115, 20, 40))
+        self.voltageDividerLine2.setFrameShape(QtWidgets.QFrame.Shape.VLine)
+        self.voltageDividerLine2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        self.voltageDividerLine2.setObjectName("voltageDividerLine2")
+        self.voltageDividerLine3 = QtWidgets.QFrame(parent=self.centralwidget)
+        self.voltageDividerLine3.setGeometry(QtCore.QRect(530, 175, 20, 40))
+        self.voltageDividerLine3.setFrameShape(QtWidgets.QFrame.Shape.VLine)
+        self.voltageDividerLine3.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        self.voltageDividerLine3.setObjectName("voltageDividerLine3")
+        self.voltageDividerLine4 = QtWidgets.QFrame(parent=self.centralwidget)
+        self.voltageDividerLine4.setGeometry(QtCore.QRect(540, 130, 61, 16))
+        self.voltageDividerLine4.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.voltageDividerLine4.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        self.voltageDividerLine4.setObjectName("voltageDividerLine4")
+        self.voltageDividerLabel1 = QtWidgets.QLabel(parent=self.centralwidget)
+        self.voltageDividerLabel1.setGeometry(QtCore.QRect(525, 35, 41, 20))
+        self.voltageDividerLabel1.setObjectName("voltageDividerLabel1")
+        self.voltageDividerLabel2 = QtWidgets.QLabel(parent=self.centralwidget)
+        self.voltageDividerLabel2.setGeometry(QtCore.QRect(530, 95, 21, 20))
+        self.voltageDividerLabel2.setObjectName("voltageDividerLabel2")
+        self.voltageDividerLabel3 = QtWidgets.QLabel(parent=self.centralwidget)
+        self.voltageDividerLabel3.setGeometry(QtCore.QRect(530, 155, 21, 20))
+        self.voltageDividerLabel3.setObjectName("voltageDividerLabel3")
+        self.voltageDividerLabel4 = QtWidgets.QLabel(parent=self.centralwidget)
+        self.voltageDividerLabel4.setGeometry(QtCore.QRect(525, 215, 41, 20))
+        self.voltageDividerLabel4.setObjectName("voltageDividerLabel4")
+        self.voltageDividerLabel5 = QtWidgets.QLabel(parent=self.centralwidget)
+        self.voltageDividerLabel5.setGeometry(QtCore.QRect(600, 130, 41, 20))
+        self.voltageDividerLabel5.setObjectName("voltageDividerLabel5")
+        self.approxValueTextInput = QtWidgets.QPlainTextEdit(parent=self.centralwidget)
+        self.approxValueTextInput.setGeometry(QtCore.QRect(720, 90, 231, 41))
+        self.approxValueTextInput.setObjectName("approxValueTextInput")
+
+        #####
+        self.approxValueTextInput.textChanged.connect(self.approxValueInputChanged)
+
+        self.approxValueLabel = QtWidgets.QLabel(parent=self.centralwidget)
+        self.approxValueLabel.setGeometry(QtCore.QRect(720, 60, 201, 20))
+        self.approxValueLabel.setObjectName("approxValueLabel")
+        self.doesNotMatterRadioButton = QtWidgets.QRadioButton(parent=self.centralwidget)
+        self.doesNotMatterRadioButton.setGeometry(QtCore.QRect(720, 140, 151, 26))
+        self.doesNotMatterRadioButton.setObjectName("doesNotMatterRadioButton")
+
+        #####
+        self.doesNotMatterRadioButton.toggled.connect(self.doesNotMatterButtonToggled)
+
+        self.rohsCompliantCheckBox = QtWidgets.QCheckBox(parent=self.centralwidget)
+        self.rohsCompliantCheckBox.setGeometry(QtCore.QRect(30, 220, 151, 26))
+        self.rohsCompliantCheckBox.setObjectName("rohsCompliantCheckBox")
+        self.searchButton = QtWidgets.QPushButton(parent=self.centralwidget)
+        self.searchButton.setGeometry(QtCore.QRect(20, 270, 961, 29))
+        self.searchButton.setObjectName("searchButton")
+
+        #####
+        self.searchButton.clicked.connect(self.searchInitiated)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(parent=MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1004, 25))
@@ -69,11 +156,23 @@ class Ui_MainWindow(QObject):
         item = self.resistorCategoriesList.item(5)
         item.setText(_translate("MainWindow", "Through Hole Resistors"))
         self.resistorCategoriesList.setSortingEnabled(__sortingEnabled)
-        self.resistorCategoriesLabel.setText(_translate("MainWindow", "Resistor Categories"))         
+        self.resistorCategoriesLabel.setText(_translate("MainWindow", "Resistor Categories"))
+        self.inStockCheckBox.setText(_translate("MainWindow", "In Stock"))
+        self.relationInputLabel.setText(_translate("MainWindow", "Vout/Vmax = "))
+        self.voltageDividerLabel1.setText(_translate("MainWindow", "Vmax"))
+        self.voltageDividerLabel2.setText(_translate("MainWindow", "R1"))
+        self.voltageDividerLabel3.setText(_translate("MainWindow", "R2"))
+        self.voltageDividerLabel4.setText(_translate("MainWindow", "GND"))
+        self.voltageDividerLabel5.setText(_translate("MainWindow", "Vout"))
+        self.approxValueLabel.setText(_translate("MainWindow", "Approx. value for resistances"))
+        self.doesNotMatterRadioButton.setText(_translate("MainWindow", "Does not matter"))
+        self.rohsCompliantCheckBox.setText(_translate("MainWindow", "RoHS Compliant"))
+        self.searchButton.setText(_translate("MainWindow", "Search"))
 
+    #####
     resistorCategorySignal = Signal(int)
     
-    def resistorCategorySelectionToCategoryCode(self):
+    def resistorCategoryChanged(self):
     
         sel = self.resistorCategoriesList.selectedItems()[0]
         match sel.text():
@@ -91,3 +190,54 @@ class Ui_MainWindow(QObject):
                 self.resistorCategorySignal.emit(53)
             case _:
                 self.resistorCategorySignal.emit(0)
+
+    #####
+    inStockCheckboxSignal = Signal(bool)
+
+    def inStockSelectionChanged(self):
+        
+        sel = self.inStockCheckBox.isChecked()
+        self.inStockCheckboxSignal.emit(sel)
+
+    #####
+    relationInputSignal = Signal(float)
+
+    def relationInputChanged(self):
+
+        self.relationInputSignal.emit(self.relationInputBox.value())
+
+
+    #####
+    approxValueSignal = Signal(str)
+
+    def approxValueInputChanged(self):
+
+        self.doesNotMatterRadioButton.setChecked(False)
+        self.approxValueSignal.emit(self.approxValueTextInput.text())
+
+    #####
+    doesNotMatterButtonSignal = Signal(bool)
+
+    def doesNotMatterButtonToggled(self):
+
+        self.doesNotMatterButtonSignal.emit(self.doesNotMatterRadioButton.isChecked)
+
+
+    #####
+    searchSignal = Signal()
+    
+    def searchInitiated(self):
+
+        self.searchSignal.emit()
+
+
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec())
