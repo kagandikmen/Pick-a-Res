@@ -7,9 +7,10 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6.QtCore import QObject, Signal, Slot
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow(QObject):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1004, 600)
@@ -68,33 +69,25 @@ class Ui_MainWindow(object):
         item = self.resistorCategoriesList.item(5)
         item.setText(_translate("MainWindow", "Through Hole Resistors"))
         self.resistorCategoriesList.setSortingEnabled(__sortingEnabled)
-        self.resistorCategoriesLabel.setText(_translate("MainWindow", "Resistor Categories"))
+        self.resistorCategoriesLabel.setText(_translate("MainWindow", "Resistor Categories"))         
 
+    resistorCategorySignal = Signal(int)
+    
     def resistorCategorySelectionToCategoryCode(self):
+    
         sel = self.resistorCategoriesList.selectedItems()[0]
         match sel.text():
             case 'Chassis Mount Resistors':
-                return 54
+                self.resistorCategorySignal.emit(54)
             case 'Chip Resistor - Surface Mount':
-                return 52
+                self.resistorCategorySignal.emit(52)
             case 'Precision Trimmed Resistors':
-                return 56
+                self.resistorCategorySignal.emit(56)
             case 'Resistor Networks - Arrays':
-                return 50
+                self.resistorCategorySignal.emit(50)
             case 'Specialized Resistors':
-                return 55
+                self.resistorCategorySignal.emit(55)
             case 'Through Hole Resistors':
-                return 53
+                self.resistorCategorySignal.emit(53)
             case _:
-                return 00
-            
-            
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec())
+                self.resistorCategorySignal.emit(0)

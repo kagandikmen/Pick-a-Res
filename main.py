@@ -1,37 +1,22 @@
-import requests
-from src.auth import requestToken
+from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6.QtCore import QObject, Signal, Slot
+from mainwindow import Ui_MainWindow
+from src.apiaccess import ApiAccess
+import sys
 
 def main():
-    with open("clientid.txt", 'r') as f:
-        clientId = f.read().strip()
 
-    with open("clientsecret.txt", 'r') as f:
-        clientSecret = f.read().strip()
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
 
-    accessToken = requestToken(clientId, clientSecret)
+    dkAccess = ApiAccess()
+    dkAccess.access()
 
-    url = 'https://api.digikey.com/products/v4/search/keyword'
+    ui.resistorCategorySignal.connect(dkAccess.onResistorCategorySignal)
 
-    auth = 'Bearer ' + accessToken
-    print(auth)
-
-    headers = {
-        'accept': 'application/json',
-        'Authorization': auth,
-        'X-DIGIKEY-Client-Id': clientId,
-        'X-DIGIKEY-Locale-Site': 'US',
-        'X-DIGIKEY-Locale-Language': 'en',
-        'X-DIGIKEY-Locale-Currency': 'USD',
-        'Content-Type': 'application/json'
-    }
-
-    data = {
-        "Keywords": "100k",
-        "Limit": 1,
-        "Offset": 0,
-    }
-
-    r = requests.post(url, json=data, headers=headers)
-    print(r.json())
+    sys.exit(app.exec())
 
 main()
