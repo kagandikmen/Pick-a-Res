@@ -2,7 +2,7 @@ import requests
 
 def requestToken(clientId, clientSecret):
     
-    url = 'https://sandbox-api.digikey.com/v1/oauth2/token'
+    url = 'https://api.digikey.com/v1/oauth2/token'
 
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'

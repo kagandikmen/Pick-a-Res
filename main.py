@@ -10,9 +10,10 @@ def main():
 
     accessToken = requestToken(clientId, clientSecret)
 
-    url = 'https://sandbox-api.digikey.com/products/v4/search/keyword'
+    url = 'https://api.digikey.com/products/v4/search/keyword'
 
     auth = 'Bearer ' + accessToken
+    print(auth)
 
     headers = {
         'accept': 'application/json',
