@@ -14,12 +14,15 @@ def main():
 
     dkAccess = ApiAccess()
     dkAccess.access()
-
+    
     ui.resistorCategorySignal.connect(dkAccess.onResistorCategoryChanged)
     ui.inStockCheckboxSignal.connect(dkAccess.onInStockSelectionChanged)
+    ui.rohsSelectionSignal.connect(dkAccess.onRohsSelectionChanged)
     ui.relationInputSignal.connect(dkAccess.onRelationInputChanged)
-    ui.approxValueSignal.connect(dkAccess.onApproxValueInputChanged)
-    ui.doesNotMatterButtonSignal.connect(dkAccess.onDoesNotMatterButtonToggled)
+    ui.approxValue_R1_Signal.connect(dkAccess.onApproxValueInput_R1_Changed)
+    ui.approxValue_R2_Signal.connect(dkAccess.onApproxValueInput_R2_Changed)
+    ui.filtersSignal.connect(dkAccess.onFiltersClicked)
+
     ui.searchSignal.connect(dkAccess.onSearchInitiated)
 
     sys.exit(app.exec())

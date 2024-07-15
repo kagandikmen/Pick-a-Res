@@ -45,17 +45,25 @@ class ApiAccess(QObject):
             }     
         ]
 
-    @Slot(int)
+    @Slot(bool)
     def onInStockSelectionChanged(self, arg):
-        self.shouldBeOnStock = arg
+        self.shouldBeInStock = arg
+
+    @Slot(bool)
+    def onRohsSelectionChanged(self, arg):
+        self.shouldBeRohs = arg
 
     @Slot(float)
     def onRelationInputChanged(self,arg):
         self.relation = arg
 
     @Slot(str)
-    def onApproxValueInputChanged(self, arg):
-        self.approxValue = arg
+    def onApproxValueInput_R1_Changed(self, arg):
+        self.approxValue_R1 = arg
+    
+    @Slot(str)
+    def onApproxValueInput_R2_Changed(self, arg):
+        self.approxValue_R2 = arg
 
     @Slot(bool)
     def onDoesNotMatterButtonToggled(self, arg):
@@ -65,3 +73,7 @@ class ApiAccess(QObject):
     def onSearchInitiated(self):
         self.access()
         print(self.resistorData.json())
+
+    @Slot()
+    def onFiltersClicked(self):
+        pass

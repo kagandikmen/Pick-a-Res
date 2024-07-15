@@ -12,10 +12,10 @@ Before using it for the first time, create two .txt files in the root directory 
 
 ## Dependencies
 
-json
-PySide6
-PyQt6
-requests
+json\
+PySide6\
+PyQt6\
+requests\
 
 ## Current Status of the Project
 
