@@ -100,6 +100,12 @@
       <pointsize>10</pointsize>
      </font>
     </property>
+    <property name="decimals">
+     <number>3</number>
+    </property>
+    <property name="maximum">
+     <double>1.000000000000000</double>
+    </property>
    </widget>
    <widget class="QLabel" name="relationInputLabel">
     <property name="geometry">
@@ -117,16 +123,6 @@
     </property>
     <property name="text">
      <string>Voltage Ratio</string>
-    </property>
-   </widget>
-   <widget class="QPlainTextEdit" name="approxValueTextInput_R1">
-    <property name="geometry">
-     <rect>
-      <x>80</x>
-      <y>380</y>
-      <width>181</width>
-      <height>41</height>
-     </rect>
     </property>
    </widget>
    <widget class="QLabel" name="approxValueLabel">
@@ -238,16 +234,6 @@
      </property>
     </column>
    </widget>
-   <widget class="QPlainTextEdit" name="approxValueTextInput_R2">
-    <property name="geometry">
-     <rect>
-      <x>80</x>
-      <y>430</y>
-      <width>181</width>
-      <height>41</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLabel" name="R1_Label">
     <property name="geometry">
      <rect>
@@ -272,6 +258,26 @@
     </property>
     <property name="text">
      <string>R2 = </string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_R1">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>435</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_R2">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>385</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
     </property>
    </widget>
   </widget>

@@ -44,6 +44,8 @@ class Ui_MainWindow(QObject):
         font = QtGui.QFont()
         font.setPointSize(10)
         self.relationInputBox.setFont(font)
+        self.relationInputBox.setDecimals(3)
+        self.relationInputBox.setMaximum(1.0)
         self.relationInputBox.setObjectName("relationInputBox")
         self.relationInputLabel = QtWidgets.QLabel(parent=self.centralwidget)
         self.relationInputLabel.setGeometry(QtCore.QRect(20, 260, 121, 31))
@@ -51,9 +53,6 @@ class Ui_MainWindow(QObject):
         font.setPointSize(9)
         self.relationInputLabel.setFont(font)
         self.relationInputLabel.setObjectName("relationInputLabel")
-        self.approxValueTextInput_R1 = QtWidgets.QPlainTextEdit(parent=self.centralwidget)
-        self.approxValueTextInput_R1.setGeometry(QtCore.QRect(80, 380, 181, 41))
-        self.approxValueTextInput_R1.setObjectName("approxValueTextInput_R1")
         self.approxValueLabel = QtWidgets.QLabel(parent=self.centralwidget)
         self.approxValueLabel.setGeometry(QtCore.QRect(20, 350, 201, 20))
         self.approxValueLabel.setObjectName("approxValueLabel")
@@ -86,15 +85,18 @@ class Ui_MainWindow(QObject):
         self.resultsTable.horizontalHeader().setCascadingSectionResizes(False)
         self.resultsTable.horizontalHeader().setDefaultSectionSize(349)
         self.resultsTable.horizontalHeader().setMinimumSectionSize(43)
-        self.approxValueTextInput_R2 = QtWidgets.QPlainTextEdit(parent=self.centralwidget)
-        self.approxValueTextInput_R2.setGeometry(QtCore.QRect(80, 430, 181, 41))
-        self.approxValueTextInput_R2.setObjectName("approxValueTextInput_R2")
         self.R1_Label = QtWidgets.QLabel(parent=self.centralwidget)
         self.R1_Label.setGeometry(QtCore.QRect(20, 390, 41, 20))
         self.R1_Label.setObjectName("R1_Label")
         self.L2_Label = QtWidgets.QLabel(parent=self.centralwidget)
         self.L2_Label.setGeometry(QtCore.QRect(20, 440, 41, 20))
         self.L2_Label.setObjectName("L2_Label")
+        self.comboBox_R1 = QtWidgets.QComboBox(parent=self.centralwidget)
+        self.comboBox_R1.setGeometry(QtCore.QRect(60, 435, 201, 31))
+        self.comboBox_R1.setObjectName("comboBox_R1")
+        self.comboBox_R2 = QtWidgets.QComboBox(parent=self.centralwidget)
+        self.comboBox_R2.setGeometry(QtCore.QRect(60, 385, 201, 31))
+        self.comboBox_R2.setObjectName("comboBox_R2")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(parent=MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1004, 25))
@@ -104,13 +106,13 @@ class Ui_MainWindow(QObject):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
-    	#####
+        #####
         self.resistorCategoriesList.itemSelectionChanged.connect(self.resistorCategoryChanged)
         self.inStockCheckBox.stateChanged.connect(self.inStockSelectionChanged)
         self.rohsCompliantCheckBox.stateChanged.connect(self.rohsSelectionChanged)
         self.relationInputBox.valueChanged.connect(self.relationInputChanged)
-        self.approxValueTextInput_R1.textChanged.connect(self.approxValueInput_R1_Changed)
-        self.approxValueTextInput_R2.textChanged.connect(self.approxValueInput_R2_Changed)
+        self.comboBox_R1.currentTextChanged.connect(self.comboBox_R1_Changed)
+        self.comboBox_R2.currentTextChanged.connect(self.comboBox_R2_Changed)
         self.filtersButton.clicked.connect(self.filtersClicked)
         self.searchButton.clicked.connect(self.searchInitiated)
         self.newApproxValueAtR1 = False
@@ -151,6 +153,7 @@ class Ui_MainWindow(QObject):
         item.setText(_translate("MainWindow", "Second Resistor"))
         self.R1_Label.setText(_translate("MainWindow", "R1 = "))
         self.L2_Label.setText(_translate("MainWindow", "R2 = "))
+
 
     #####
     resistorCategorySignal = Signal(int)
@@ -198,22 +201,22 @@ class Ui_MainWindow(QObject):
 
 
     #####
-    approxValue_R1_Signal = Signal(str)
-    approxValue_R2_Signal = Signal(str)
+    comboBox_R1_Signal = Signal(str)
+    comboBox_R2_Signal = Signal(str)
 
-    def approxValueInput_R1_Changed(self):
-        self.newApproxValueAtR1 = True
-        if (self.newApproxValueAtR2 == False):
-            self.approxValueTextInput_R2.clear()
-        self.approxValue_R1_Signal.emit(self.approxValueTextInput_R1.copy())
-        self.newApproxValueAtR1 = False
+    def comboBox_R1_Changed(self):
+        self.newCombo_R1_value = True
+        if (self.newCombo_R2_value == False):
+            self.comboBox_R2.clear()
+            self.comboBox_R1_Signal.emit(self.comboBox_R1.currentText())
+        self.newCombo_R1_value = False
 
-    def approxValueInput_R2_Changed(self):
-        self.newApproxValueAtR2 = True
-        if (self.newApproxValueAtR1 == False):
-            self.approxValueTextInput_R1.clear()
-        self.approxValue_R2_Signal.emit(self.approxValueTextInput_R2.copy())
-        self.newApproxValueAtR2 = False
+    def comboBox_R2_Changed(self):
+        self.newCombo_R2_value = True
+        if (self.newCombo_R1_value == False):
+            self.comboBox_R1.clear()
+            self.comboBox_R2_Signal.emit(self.comboBox_R2.currentText())
+        self.newCombo_R2_value = False
 
 
     #####
@@ -229,7 +232,6 @@ class Ui_MainWindow(QObject):
     def filtersClicked(self):
 
         self.filtersSignal.emit()
-
 
 
 if __name__ == "__main__":

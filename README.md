@@ -15,7 +15,7 @@ Before using it for the first time, create two .txt files in the root directory 
 json\
 PySide6\
 PyQt6\
-requests\
+requests
 
 ## Current Status of the Project
 
