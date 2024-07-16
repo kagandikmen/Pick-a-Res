@@ -5,7 +5,8 @@ from src.auth import requestToken
 
 class ApiAccess(QObject):
     def __init__(self):
-        
+        super(ApiAccess, self).__init__()
+
         with open("clientid.txt", 'r') as f:
             clientId = f.read().strip()
 
@@ -27,23 +28,44 @@ class ApiAccess(QObject):
         }
 
         self.data = {
-            "Keywords": "100k",
-            "Limit": 5,
+            "Keywords": "string",
+            "Limit": 0,
             "Offset": 0,
             "FilterOptionsRequest": {
             }
         }
     
-    def access(self):
-        self.resistorData = requests.post(self.url, json=self.data, headers=self.headers)
+    def singleAccess(self, keyword, limit):
+
+        self.data['Keywords'] = keyword
+        self.data['Limit'] = limit
+
+        resistorData = requests.post(self.url, json=self.data, headers=self.headers)
+        return resistorData
+
+    def doubleAccess(self):
+        pass
+        #if(self.approxIsR1):
+
+        #elif(self.approxIsR2):
+
+    def keywordTransformer(keyword):
+        pass
+
+    resistorValuesSignal = Signal(list)
 
     @Slot(int)
     def onResistorCategoryChanged(self, arg):
         self.data["FilterOptionsRequest"]["CategoryFilter"] = [
             {
-                "Id": str(arg)
+                "Id": arg
             }     
         ]
+        resistorValuesList = []
+        for filterValue in self.singleAccess('resistor', 1).json()['FilterOptions']['ParametricFilters'][0]['FilterValues']:
+            resistorValuesList.append(filterValue['ValueId'])
+        
+        self.resistorValuesSignal.emit(resistorValuesList)
 
     @Slot(bool)
     def onInStockSelectionChanged(self, arg):
@@ -55,15 +77,15 @@ class ApiAccess(QObject):
 
     @Slot(float)
     def onRelationInputChanged(self,arg):
-        self.relation = arg
+        self.relation = float(arg)
 
     @Slot(str)
-    def onApproxValueInput_R1_Changed(self, arg):
-        self.approxValue_R1 = arg
+    def onCombo_R1_Changed(self, arg):
+        pass
     
     @Slot(str)
-    def onApproxValueInput_R2_Changed(self, arg):
-        self.approxValue_R2 = arg
+    def onCombo_R2_Changed(self, arg):
+        pass
 
     @Slot(bool)
     def onDoesNotMatterButtonToggled(self, arg):
@@ -71,8 +93,8 @@ class ApiAccess(QObject):
 
     @Slot()
     def onSearchInitiated(self):
-        self.access()
-        print(self.resistorData.json())
+        self.doubleAccess()
+        #print(self.resistorData.json())
 
     @Slot()
     def onFiltersClicked(self):

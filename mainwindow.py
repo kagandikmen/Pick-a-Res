@@ -107,6 +107,10 @@ class Ui_MainWindow(QObject):
         MainWindow.setStatusBar(self.statusbar)
 
         #####
+
+        self.newCombo_R1_value = False
+        self.newCombo_R2_value = False
+
         self.resistorCategoriesList.itemSelectionChanged.connect(self.resistorCategoryChanged)
         self.inStockCheckBox.stateChanged.connect(self.inStockSelectionChanged)
         self.rohsCompliantCheckBox.stateChanged.connect(self.rohsSelectionChanged)
@@ -115,8 +119,6 @@ class Ui_MainWindow(QObject):
         self.comboBox_R2.currentTextChanged.connect(self.comboBox_R2_Changed)
         self.filtersButton.clicked.connect(self.filtersClicked)
         self.searchButton.clicked.connect(self.searchInitiated)
-        self.newApproxValueAtR1 = False
-        self.newApproxValueAtR2 = False
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -207,14 +209,14 @@ class Ui_MainWindow(QObject):
     def comboBox_R1_Changed(self):
         self.newCombo_R1_value = True
         if (self.newCombo_R2_value == False):
-            self.comboBox_R2.clear()
+            self.comboBox_R2.setCurrentIndex(-1)
             self.comboBox_R1_Signal.emit(self.comboBox_R1.currentText())
         self.newCombo_R1_value = False
 
     def comboBox_R2_Changed(self):
         self.newCombo_R2_value = True
         if (self.newCombo_R1_value == False):
-            self.comboBox_R1.clear()
+            self.comboBox_R1.setCurrentIndex(-1)
             self.comboBox_R2_Signal.emit(self.comboBox_R2.currentText())
         self.newCombo_R2_value = False
 
@@ -232,6 +234,14 @@ class Ui_MainWindow(QObject):
     def filtersClicked(self):
 
         self.filtersSignal.emit()
+
+    @Slot(list)
+    def onResistorValuesCalculated(self, arg):
+        self.comboBox_R1.clear()
+        self.comboBox_R2.clear()
+        for value in arg:
+            self.comboBox_R1.addItem(value)
+            self.comboBox_R2.addItem(value)
 
 
 if __name__ == "__main__":

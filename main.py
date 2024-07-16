@@ -21,6 +21,7 @@ def main():
     ui.comboBox_R1_Signal.connect(dkAccess.onCombo_R1_Changed)
     ui.comboBox_R2_Signal.connect(dkAccess.onCombo_R2_Changed)
     ui.filtersSignal.connect(dkAccess.onFiltersClicked)
+    dkAccess.resistorValuesSignal.connect(ui.onResistorValuesCalculated)
 
     ui.searchSignal.connect(dkAccess.onSearchInitiated)
 
