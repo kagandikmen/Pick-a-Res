@@ -1,4 +1,5 @@
 import json
+from enum import Enum
 from PySide6.QtCore import QObject, Signal, Slot
 import requests
 from src.auth import requestToken
@@ -27,33 +28,66 @@ class ApiAccess(QObject):
             'Content-Type': 'application/json'
         }
 
-        self.data = {
-            "Keywords": "string",
-            "Limit": 0,
-            "Offset": 0,
+        #self.data = {
+        #    "Keywords": "string",
+        #    "Limit": 0,
+        #    "Offset": 0,
+        #    "FilterOptionsRequest": {
+        #    }
+        #}
+
+        self.condo_R1_inCharge = False
+        self.condo_R2_inCharge = False
+        self.r1Data = {}
+        self.r2Data = {}
+        self.resistancesInPOhmsDict = {}
+
+
+    def dataJsonBuilder(self, keyword='string', limit=1, offset=0, resistancesList=[]):
+        
+        data = {
+            "Keywords": keyword,
+            "Limit": limit,
+            "Offset": offset,
             "FilterOptionsRequest": {
+                "CategoryFilter": [
+                    {
+                        "Id": self.resistorCategoryId
+                    }
+                ]
             }
         }
+
+        if(len(resistancesList) != 0):
+            data['FilterOptionsRequest']['ParameterFilterRequest'] = {
+                "CategoryFilter": {
+                    "Id": self.resistorCategoryId
+                },
+                "ParameterFilters": [
+                    {
+                        "ParameterId": 2085,      # Resistance
+                        "FilterValues": [
+                            #{
+                            #    "Id": "100 µOhms"
+                            #},
+                        ]
+                    }
+                ]
+            }
+
+        for resistorValue in resistancesList:
+            data['FilterOptionsRequest']['ParameterFilterRequest']['ParameterFilters'][0]['FilterValues'].append({'Id': str(resistorValue)})
+
+        return data
+
     
-    def singleAccess(self, keyword, limit):
+    def singleAccess(self, dataJson):
 
-        self.data['Keywords'] = keyword
-        self.data['Limit'] = limit
-
-        resistorData = requests.post(self.url, json=self.data, headers=self.headers)
+        resistorData = requests.post(self.url, json=dataJson, headers=self.headers)
         return resistorData
-
-    def doubleAccess(self):
-        pass
-        #if(self.approxIsR1):
-
-        #elif(self.approxIsR2):
-
-    def keywordTransformer(keyword):
-        pass
     
-    def resistance2NominalValueInPOhms(self, resstr, Round):
-        nominal = float(resstr.strip('pnuµmkMGOhs'))
+    def resistance2NominalValueInPOhms(self, resstr, *, Round):
+        nominal = float(resstr.strip(' pnuµmkMGOhs'))
         if(Round):
             match(resstr[-5]):
                 case 'p':
@@ -95,37 +129,34 @@ class ApiAccess(QObject):
                 case _:
                     return "Error!"
 
+    def buildTable(self):
+        print(self.r2Data.json())
 
     resistorValuesSignal = Signal(list)
 
     @Slot(int)
     def onResistorCategoryChanged(self, arg):
-        self.data["FilterOptionsRequest"]["CategoryFilter"] = [
-            {
-                "Id": arg
-            }     
-        ]
+        self.resistorCategoryId = arg
         resistorValuesList = []
-        for filterValue in self.singleAccess('resistor', 1).json()['FilterOptions']['ParametricFilters'][0]['FilterValues']:
+        for filterValue in self.singleAccess(dataJson=self.dataJsonBuilder(keyword='resistor', limit=1)).json()['FilterOptions']['ParametricFilters'][0]['FilterValues']:
             resistorValuesList.append(filterValue['ValueId'])
         
         self.resistorValuesSignal.emit(resistorValuesList)
 
-        resistancesInPOhmsDict = {}
         for resistance in resistorValuesList:
-            val = self.resistance2NominalValueInPOhms(resistance, True)
-            if val not in resistancesInPOhmsDict:
-                resistancesInPOhmsDict[val] = [resistance]
+            val = self.resistance2NominalValueInPOhms(resistance, Round=True)
+            if val not in self.resistancesInPOhmsDict:
+                self.resistancesInPOhmsDict[val] = [resistance]
             else:
-                resistancesInPOhmsDict[val].append(resistance)
+                self.resistancesInPOhmsDict[val].append(resistance)
 
     @Slot(bool)
     def onInStockSelectionChanged(self, arg):
-        self.shouldBeInStock = arg
+        pass
 
     @Slot(bool)
     def onRohsSelectionChanged(self, arg):
-        self.shouldBeRohs = arg
+        pass
 
     @Slot(float)
     def onRelationInputChanged(self,arg):
@@ -133,16 +164,83 @@ class ApiAccess(QObject):
 
     @Slot(str)
     def onCombo_R1_Changed(self, arg):
-        pass
+        self.condo_R1_inCharge = True
+        self.condo_R2_inCharge = False
+        self.condo_R1_text = arg
+        self.condo_R2_text = ''
     
     @Slot(str)
     def onCombo_R2_Changed(self, arg):
-        pass
+        self.condo_R1_inCharge = False
+        self.condo_R2_inCharge = True
+        self.condo_R1_text = ''
+        self.condo_R2_text = arg
 
     @Slot()
     def onSearchInitiated(self):
-        self.doubleAccess()
-        #print(self.resistorData.json())
+        H = self.relation
+        resistorValuesForSearch = []
+        if(self.condo_R1_inCharge):
+            r1 = self.resistance2NominalValueInPOhms(self.condo_R1_text, Round=False)
+            r2 = (H / (1-H)) * r1
+            oldResistanceValue = 0
+            
+            for resistanceValue in self.resistancesInPOhmsDict:
+                if(resistanceValue > r2):
+                    abs2Bigger = abs(resistanceValue - r2)
+                    abs2Smaller = abs(oldResistanceValue - r2)
+                    if(abs2Bigger > abs2Smaller):
+                        resistorValuesForSearch = self.resistancesInPOhmsDict[oldResistanceValue]
+                        break
+                    elif(abs2Smaller > abs2Bigger):
+                        resistorValuesForSearch = self.resistancesInPOhmsDict[resistanceValue]
+                        break
+                    else:
+                        resistorValuesForSearch = self.resistancesInPOhmsDict[oldResistanceValue].append(self.resistancesInPOhmsDict[resistanceValue])
+                        break
+                oldResistanceValue = resistanceValue
+            
+            if (len(resistorValuesForSearch) == 0):
+                resistorValuesForSearch = self.resistancesInPOhmsDict[oldResistanceValue]
+
+            r1 = self.resistance2NominalValueInPOhms(self.condo_R1_text, Round=True)
+            r1DataJson = self.dataJsonBuilder(keyword='resistor', limit=1, resistancesList=self.resistancesInPOhmsDict[r1])
+            r2DataJson = self.dataJsonBuilder(keyword='resistor', limit=1, resistancesList=resistorValuesForSearch)
+            
+            self.r1Data = self.singleAccess(dataJson=r1DataJson)
+            self.r2Data = self.singleAccess(dataJson=r2DataJson)
+
+        elif(self.condo_R2_inCharge):
+            r2 = self.resistance2NominalValueInPOhms(self.condo_R2_text, Round=False)
+            r1 = ((1-H) / H) * r2
+            oldResistanceValue = 0
+            
+            for resistanceValue in self.resistancesInPOhmsDict:
+                if(resistanceValue > r1):
+                    abs2Bigger = abs(resistanceValue - r1)
+                    abs2Smaller = abs(oldResistanceValue - r1)
+                    if(abs2Bigger > abs2Smaller):
+                        resistorValuesForSearch = self.resistancesInPOhmsDict[oldResistanceValue]
+                        break
+                    elif(abs2Smaller > abs2Bigger):
+                        resistorValuesForSearch = self.resistancesInPOhmsDict[resistanceValue]
+                        break
+                    else:
+                        resistorValuesForSearch = self.resistancesInPOhmsDict[oldResistanceValue].append(self.resistancesInPOhmsDict[resistanceValue])
+                        break
+                oldResistanceValue = resistanceValue
+            
+            if (len(resistorValuesForSearch) == 0):
+                resistorValuesForSearch = self.resistancesInPOhmsDict[oldResistanceValue]
+
+            r2 = self.resistance2NominalValueInPOhms(self.condo_R2_text, Round=True)
+            r1DataJson = self.dataJsonBuilder(keyword='resistor', limit=1, resistancesList=resistorValuesForSearch)
+            r2DataJson = self.dataJsonBuilder(keyword='resistor', limit=1, resistancesList=self.resistancesInPOhmsDict[r2])
+            
+            self.r1Data = self.singleAccess(dataJson=r1DataJson)
+            self.r2Data = self.singleAccess(dataJson=r2DataJson)
+
+        self.buildTable()
 
     @Slot()
     def onFiltersClicked(self):
