@@ -14,8 +14,7 @@ def main():
 
     dkAccess = ApiAccess()
     
-    ui.resistorCategorySignal.connect(dkAccess.onResistorCategoryChanged)
-    ui.inStockCheckboxSignal.connect(dkAccess.onInStockSelectionChanged)
+    ui.basicCriteriaSignal.connect(dkAccess.onBasicCriteriaChanged)
     ui.rohsSelectionSignal.connect(dkAccess.onRohsSelectionChanged)
     ui.relationInputSignal.connect(dkAccess.onRelationInputChanged)
     ui.comboBox_R1_Signal.connect(dkAccess.onCombo_R1_Changed)
