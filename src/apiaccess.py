@@ -1,6 +1,7 @@
 from PySide6.QtCore import QObject, Signal, Slot
 import requests
 from src.auth import requestToken
+from src.interpret_output import resistance2NominalValueInPOhms
 
 class ApiAccess(QObject):
     def __init__(self):
@@ -39,6 +40,7 @@ class ApiAccess(QObject):
         self.r1Data = {}
         self.r2Data = {}
         self.resistancesInPOhmsDict = {}
+        self.searchDepth = 5
 
 
     def dataJsonBuilder(self, keyword='string', limit=1, offset=0, resistancesList=[]):
@@ -77,54 +79,10 @@ class ApiAccess(QObject):
             data['FilterOptionsRequest']['ParameterFilterRequest']['ParameterFilters'][0]['FilterValues'].append({'Id': str(resistorValue)})
 
         return data
-
     
     def singleAccess(self, dataJson):
         resistorData = requests.post(self.url, json=dataJson, headers=self.headers)
         return resistorData
-    
-    def resistance2NominalValueInPOhms(self, resstr, *, Round):
-        nominal = float(resstr.strip(' pnuµmkMGOhs'))
-        if(Round):
-            match(resstr[-5]):
-                case 'p':
-                    return nominal
-                case 'n':
-                    return round(nominal * 10e3, -1)
-                case 'u' | 'µ':
-                    return round(nominal * 10e6, -4)
-                case 'm':
-                    return round(nominal * 10e9, -7)
-                case 'k':
-                    return round(nominal * 10e15, -13)
-                case 'M':
-                    return round(nominal * 10e18, -16)
-                case 'G':
-                    return round(nominal * 10e21, -19)
-                case " ":
-                    return round(nominal * 10e12, 10)
-                case _:
-                    return 'Error!'
-        else:
-            match(resstr[-5]):
-                case 'p':
-                    return nominal
-                case 'n':
-                    return nominal * 10e3
-                case 'u' | 'µ':
-                    return nominal * 10e6
-                case 'm':
-                    return nominal * 10e9
-                case 'k':
-                    return nominal * 10e15
-                case 'M':
-                    return nominal * 10e18
-                case 'G':
-                    return nominal * 10e21
-                case ' ':
-                    return nominal * 10e12
-                case _:
-                    return "Error!"
 
     resistorDataSignal = Signal(dict, dict)
 
@@ -143,7 +101,7 @@ class ApiAccess(QObject):
         self.resistorValuesSignal.emit(resistorValuesList)
 
         for resistance in resistorValuesList:
-            val = self.resistance2NominalValueInPOhms(resistance, Round=True)
+            val = resistance2NominalValueInPOhms(resistance, Round=True)
             if val not in self.resistancesInPOhmsDict:
                 self.resistancesInPOhmsDict[val] = [resistance]
             else:
@@ -180,7 +138,7 @@ class ApiAccess(QObject):
         H = self.relation
         resistorValuesForSearch = []
         if(self.condo_R1_inCharge):
-            r1 = self.resistance2NominalValueInPOhms(self.condo_R1_text, Round=False)
+            r1 = resistance2NominalValueInPOhms(self.condo_R1_text, Round=False)
             r2 = (H / (1-H)) * r1
             oldResistanceValue = 0
             
@@ -202,15 +160,15 @@ class ApiAccess(QObject):
             if (len(resistorValuesForSearch) == 0):
                 resistorValuesForSearch = self.resistancesInPOhmsDict[oldResistanceValue]
 
-            r1 = self.resistance2NominalValueInPOhms(self.condo_R1_text, Round=True)
-            r1DataJson = self.dataJsonBuilder(keyword='resistor', limit=5, resistancesList=self.resistancesInPOhmsDict[r1])
-            r2DataJson = self.dataJsonBuilder(keyword='resistor', limit=5, resistancesList=resistorValuesForSearch)
+            r1 = resistance2NominalValueInPOhms(self.condo_R1_text, Round=True)
+            r1DataJson = self.dataJsonBuilder(keyword='resistor', limit=self.searchDepth, resistancesList=self.resistancesInPOhmsDict[r1])
+            r2DataJson = self.dataJsonBuilder(keyword='resistor', limit=self.searchDepth, resistancesList=resistorValuesForSearch)
             
             self.r1Data = self.singleAccess(dataJson=r1DataJson)
             self.r2Data = self.singleAccess(dataJson=r2DataJson)
 
         elif(self.condo_R2_inCharge):
-            r2 = self.resistance2NominalValueInPOhms(self.condo_R2_text, Round=False)
+            r2 = resistance2NominalValueInPOhms(self.condo_R2_text, Round=False)
             r1 = ((1-H) / H) * r2
             oldResistanceValue = 0
             
@@ -232,9 +190,9 @@ class ApiAccess(QObject):
             if (len(resistorValuesForSearch) == 0):
                 resistorValuesForSearch = self.resistancesInPOhmsDict[oldResistanceValue]
 
-            r2 = self.resistance2NominalValueInPOhms(self.condo_R2_text, Round=True)
-            r1DataJson = self.dataJsonBuilder(keyword='resistor', limit=5, resistancesList=resistorValuesForSearch)
-            r2DataJson = self.dataJsonBuilder(keyword='resistor', limit=5, resistancesList=self.resistancesInPOhmsDict[r2])
+            r2 = resistance2NominalValueInPOhms(self.condo_R2_text, Round=True)
+            r1DataJson = self.dataJsonBuilder(keyword='resistor', limit=self.searchDepth, resistancesList=resistorValuesForSearch)
+            r2DataJson = self.dataJsonBuilder(keyword='resistor', limit=self.searchDepth, resistancesList=self.resistancesInPOhmsDict[r2])
             
             self.r1Data = self.singleAccess(dataJson=r1DataJson)
             self.r2Data = self.singleAccess(dataJson=r2DataJson)
