@@ -12,14 +12,20 @@ Before using it for the first time, create two .txt files in the root directory 
 
 ## Dependencies
 
-json\
 PySide6\
 PyQt6\
 requests
 
 ## Current Status of the Project
 
-This project is still in its early stages of development. Only the API calls and a primitive GUI have been implemented yet.
+This project is still under development as of 2024-07-18. 
+
+## Known Issues
+
+- The API can currently access USA-specific (US, en, USD) data only. 
+- Filtering components is not implemented yet, except for the "In Stock" & "RoHS Compliant" filters. 
+- The search may not work correctly for all resistor types, but is well tested for through-hole & chip SMT resistors. 
+- The GUI still has slight user experience issues.
 
 ## Contributing
 
