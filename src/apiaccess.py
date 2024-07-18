@@ -40,7 +40,7 @@ class ApiAccess(QObject):
         self.r1Data = {}
         self.r2Data = {}
         self.resistancesInPOhmsDict = {}
-        self.searchDepth = 5
+        self.searchDepth = 20
 
 
     def dataJsonBuilder(self, keyword='string', limit=1, offset=0, resistancesList=[]):

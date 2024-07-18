@@ -8,7 +8,7 @@
 
 from PySide6.QtCore import QObject, Signal, Slot
 from PyQt6 import QtCore, QtGui, QtWidgets
-
+from src.interpret_output import resistance2NominalValueInPOhms
 
 class Ui_MainWindow(QObject):
 
@@ -148,7 +148,10 @@ class Ui_MainWindow(QObject):
 
         self.newCombo_R1_value = False
         self.newCombo_R2_value = False
-        
+
+        self.R1_SelectionExists = False
+        self.R2_SelectionExists = False
+
         self.resistorCategoriesList.itemSelectionChanged.connect(self.resistorCategoryChanged)
         self.inStockCheckBox.stateChanged.connect(self.inStockSelectionChanged)
         self.rohsCompliantCheckBox.stateChanged.connect(self.rohsSelectionChanged)
@@ -157,6 +160,8 @@ class Ui_MainWindow(QObject):
         self.comboBox_R2.currentTextChanged.connect(self.comboBox_R2_Changed)
         self.filtersButton.clicked.connect(self.filtersClicked)
         self.searchButton.clicked.connect(self.searchInitiated)
+        self.R1_Table.itemSelectionChanged.connect(self.R1_SelectionChanged)
+        self.R2_Table.itemSelectionChanged.connect(self.R2_SelectionChanged)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -263,6 +268,10 @@ class Ui_MainWindow(QObject):
     searchSignal = Signal()
     
     def searchInitiated(self):
+        self.R1_Table.clear()
+        self.R2_Table.clear()
+        self.finalVoltageRatioBox.clear()
+        self.devianceBox.clear()
         self.searchSignal.emit()
 
     #####
@@ -271,6 +280,40 @@ class Ui_MainWindow(QObject):
     def filtersClicked(self):
 
         self.filtersSignal.emit()
+
+    def R1_SelectionChanged(self):
+        
+        if(len(self.R1_Table.selectedItems())==0):
+            self.R1_SelectionExists = False
+            self.recalculateDevianceAndFinal()
+        else:
+            self.R1_SelectionExists = True
+            self.recalculateDevianceAndFinal()
+
+    def R2_SelectionChanged(self):
+        
+        if(len(self.R2_Table.selectedItems())==0):
+            self.R2_SelectionExists = False
+            self.recalculateDevianceAndFinal()
+        else:
+            self.R2_SelectionExists = True
+            self.recalculateDevianceAndFinal()
+
+    def recalculateDevianceAndFinal(self):
+
+        if(self.R1_SelectionExists and self.R2_SelectionExists):
+            r1_InPico = resistance2NominalValueInPOhms(self.r1Json['Products'][self.R1_Table.selectedItems()[0].row()]['Parameters'][0]['ValueText'], Round=False)
+            r2_InPico = resistance2NominalValueInPOhms(self.r2Json['Products'][self.R2_Table.selectedItems()[0].row()]['Parameters'][0]['ValueText'], Round=False)
+
+            realH = r2_InPico / (r1_InPico + r2_InPico)
+            self.finalVoltageRatioBox.setPlainText(str(realH))
+
+            deviance = abs(realH - self.relationInputBox.value()) / self.relationInputBox.value()
+            self.devianceBox.setPlainText(str(deviance))
+        else:
+            self.finalVoltageRatioBox.clear()
+            self.devianceBox.clear()
+
 
     @Slot(list)
     def onResistorValuesCalculated(self, arg):
@@ -286,15 +329,17 @@ class Ui_MainWindow(QObject):
     @Slot(dict, dict)
     def buildTables(self, r1, r2):
         self.statusbar.showMessage('Building the tables', 0)
-        self.R1_Table.setRowCount(5)
-        self.R2_Table.setRowCount(5)
+        self.r1Json = r1
+        self.r2Json = r2
+        self.R1_Table.setRowCount(len(r1['Products']))
+        self.R2_Table.setRowCount(len(r2['Products']))
         
-        for row in range(5):
+        for row in range(len(r1['Products'])):
             product = r1['Products'][row]
             item = QtWidgets.QTableWidgetItem(product['Description']['ProductDescription'] + " (" + product['Parameters'][0]['ValueText'] + ")")
             self.R1_Table.setItem(row, 0, item)
         
-        for row in range(5):
+        for row in range(len(r2['Products'])):
             product = r2['Products'][row]
             item = QtWidgets.QTableWidgetItem(product['Description']['ProductDescription'] + " (" + product['Parameters'][0]['ValueText'] + ")")
             self.R2_Table.setItem(row, 0, item)
