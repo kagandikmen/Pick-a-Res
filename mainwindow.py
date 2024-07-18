@@ -154,7 +154,7 @@ class Ui_MainWindow(QObject):
 
         self.resistorCategoriesList.itemSelectionChanged.connect(self.basicCriteriaChanged)
         self.inStockCheckBox.stateChanged.connect(self.basicCriteriaChanged)
-        self.rohsCompliantCheckBox.stateChanged.connect(self.rohsSelectionChanged)
+        self.rohsCompliantCheckBox.stateChanged.connect(self.basicCriteriaChanged)
         self.relationInputBox.valueChanged.connect(self.relationInputChanged)
         self.comboBox_R1.currentTextChanged.connect(self.comboBox_R1_Changed)
         self.comboBox_R2.currentTextChanged.connect(self.comboBox_R2_Changed)
@@ -202,32 +202,25 @@ class Ui_MainWindow(QObject):
         self.finalVoltageRatioLabel.setText(_translate("MainWindow", "Final Voltage Ratio"))
     
     #####
-    basicCriteriaSignal = Signal(int, bool)
+    basicCriteriaSignal = Signal(int, bool, bool)
     
     def basicCriteriaChanged(self):
         sel = self.resistorCategoriesList.selectedItems()[0]
         match sel.text():
             case 'Chassis Mount Resistors':
-                self.basicCriteriaSignal.emit(54, self.inStockCheckBox.isChecked())
+                self.basicCriteriaSignal.emit(54, self.inStockCheckBox.isChecked(), self.rohsCompliantCheckBox.isChecked())
             case 'Chip Resistor - Surface Mount':
-                self.basicCriteriaSignal.emit(52, self.inStockCheckBox.isChecked())
+                self.basicCriteriaSignal.emit(52, self.inStockCheckBox.isChecked(), self.rohsCompliantCheckBox.isChecked())
             case 'Precision Trimmed Resistors':
-                self.basicCriteriaSignal.emit(56, self.inStockCheckBox.isChecked())
+                self.basicCriteriaSignal.emit(56, self.inStockCheckBox.isChecked(), self.rohsCompliantCheckBox.isChecked())
             case 'Resistor Networks - Arrays':
-                self.basicCriteriaSignal.emit(50, self.inStockCheckBox.isChecked())
+                self.basicCriteriaSignal.emit(50, self.inStockCheckBox.isChecked(), self.rohsCompliantCheckBox.isChecked())
             case 'Specialized Resistors':
-                self.basicCriteriaSignal.emit(55, self.inStockCheckBox.isChecked())
+                self.basicCriteriaSignal.emit(55, self.inStockCheckBox.isChecked(), self.rohsCompliantCheckBox.isChecked())
             case 'Through Hole Resistors':
-                self.basicCriteriaSignal.emit(53, self.inStockCheckBox.isChecked())
+                self.basicCriteriaSignal.emit(53, self.inStockCheckBox.isChecked(), self.rohsCompliantCheckBox.isChecked())
             case _:
                 raise Exception('Something went wrong in the resistor category selection!')
-
-    #####
-    rohsSelectionSignal = Signal(bool)
-    
-    def rohsSelectionChanged(self):
-
-        self.rohsSelectionSignal.emit(self.rohsCompliantCheckBox.isChecked())
 
     #####
     relationInputSignal = Signal(float)

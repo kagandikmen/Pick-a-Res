@@ -43,7 +43,7 @@ class ApiAccess(QObject):
         self.searchDepth = 20               # default value
 
 
-    def dataJsonBuilder(self, keyword='string', limit=1, offset=0, mustBeInStock=True, resistancesList=[]):
+    def dataJsonBuilder(self, keyword='string', limit=1, offset=0, mustBeInStock=True, mustBeRohsCompliant=False, resistancesList=[]):
         
         data = {
             "Keywords": keyword,
@@ -64,6 +64,9 @@ class ApiAccess(QObject):
         if(mustBeInStock is True):
             data['FilterOptionsRequest']['SearchOptions'].append('InStock')
 
+        if(mustBeRohsCompliant is True):
+            data['FilterOptionsRequest']['SearchOptions'].append('RohsCompliant')
+
         if(len(resistancesList) != 0):
             data['FilterOptionsRequest']['ParameterFilterRequest'] = {
                 "CategoryFilter": {
@@ -81,8 +84,6 @@ class ApiAccess(QObject):
                 ]
             }
 
-        
-
         for resistorValue in resistancesList:
             data['FilterOptionsRequest']['ParameterFilterRequest']['ParameterFilters'][0]['FilterValues'].append({'Id': str(resistorValue)})
 
@@ -99,11 +100,11 @@ class ApiAccess(QObject):
 
     resistorValuesSignal = Signal(list)
 
-    @Slot(int, bool)
-    def onBasicCriteriaChanged(self, resCategoryCode, isInStockChecked):
+    @Slot(int, bool, bool)
+    def onBasicCriteriaChanged(self, resCategoryCode, isInStockChecked, isRohsChecked):
         self.resistorCategoryId = resCategoryCode
         resistorValuesList = []
-        for filterValue in self.singleAccess(dataJson=self.dataJsonBuilder(keyword='resistor', limit=1, mustBeInStock=isInStockChecked)).json()['FilterOptions']['ParametricFilters'][0]['FilterValues']:
+        for filterValue in self.singleAccess(dataJson=self.dataJsonBuilder(keyword='resistor', limit=1, mustBeInStock=isInStockChecked, mustBeRohsCompliant=isRohsChecked)).json()['FilterOptions']['ParametricFilters'][0]['FilterValues']:
             resistorValuesList.append(filterValue['ValueId'])
         
         self.resistorValuesSignal.emit(resistorValuesList)
@@ -114,10 +115,6 @@ class ApiAccess(QObject):
                 self.resistancesInPOhmsDict[val] = [resistance]
             else:
                 self.resistancesInPOhmsDict[val].append(resistance)
-
-    @Slot(bool)
-    def onRohsSelectionChanged(self, arg):
-        pass
 
     @Slot(float)
     def onRelationInputChanged(self,arg):
