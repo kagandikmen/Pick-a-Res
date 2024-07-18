@@ -1,31 +1,29 @@
-import requests
-from src.auth import requestToken
+from PyQt6 import QtCore, QtGui, QtWidgets
+from PySide6.QtCore import QObject, Signal, Slot
+from mainwindow import Ui_MainWindow
+from src.apiaccess import ApiAccess
+import sys
 
 def main():
-    with open("clientid.txt", 'r') as f:
-        clientId = f.read().strip()
 
-    with open("clientsecret.txt", 'r') as f:
-        clientSecret = f.read().strip()
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
 
-    accessToken = requestToken(clientId, clientSecret)
+    dkAccess = ApiAccess()
+    
+    ui.basicCriteriaSignal.connect(dkAccess.onBasicCriteriaChanged)
+    ui.relationInputSignal.connect(dkAccess.onRelationInputChanged)
+    ui.comboBox_R1_Signal.connect(dkAccess.onCombo_R1_Changed)
+    ui.comboBox_R2_Signal.connect(dkAccess.onCombo_R2_Changed)
+    ui.filtersSignal.connect(dkAccess.onFiltersClicked)
+    dkAccess.resistorValuesSignal.connect(ui.onResistorValuesCalculated)
+    dkAccess.resistorDataSignal.connect(ui.buildTables)
 
-    url = 'https://sandbox-api.digikey.com/products/v4/search/P5555-ND/productdetails'
+    ui.searchSignal.connect(dkAccess.onSearchInitiated)
 
-    auth = 'Bearer ' + accessToken
-
-    headers = {
-        'Authorization': auth,
-        'X-DIGIKEY-Client-Id': clientId
-    }
-
-    data = {
-        'X-DIGIKEY-Locale-Site': 'US',
-        'X-DIGIKEY-Locale-Language': 'en',
-        'X-DIGIKEY-Locale-Currency': 'USD',
-    }
-
-    r = requests.get(url, data=data, headers=headers)
-    print(r.json())
+    sys.exit(app.exec())
 
 main()
