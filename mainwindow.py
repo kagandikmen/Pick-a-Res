@@ -11,9 +11,10 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 
 
 class Ui_MainWindow(QObject):
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1004, 665)
+        MainWindow.resize(1200, 670)
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.resistorCategoriesList = QtWidgets.QListWidget(parent=self.centralwidget)
@@ -54,9 +55,9 @@ class Ui_MainWindow(QObject):
         font.setPointSize(9)
         self.relationInputLabel.setFont(font)
         self.relationInputLabel.setObjectName("relationInputLabel")
-        self.approxValueLabel = QtWidgets.QLabel(parent=self.centralwidget)
-        self.approxValueLabel.setGeometry(QtCore.QRect(20, 350, 201, 20))
-        self.approxValueLabel.setObjectName("approxValueLabel")
+        self.combosLabel = QtWidgets.QLabel(parent=self.centralwidget)
+        self.combosLabel.setGeometry(QtCore.QRect(20, 350, 241, 16))
+        self.combosLabel.setObjectName("combosLabel")
         self.rohsCompliantCheckBox = QtWidgets.QCheckBox(parent=self.centralwidget)
         self.rohsCompliantCheckBox.setGeometry(QtCore.QRect(30, 220, 151, 26))
         self.rohsCompliantCheckBox.setObjectName("rohsCompliantCheckBox")
@@ -69,23 +70,21 @@ class Ui_MainWindow(QObject):
         self.resultsLabel = QtWidgets.QLabel(parent=self.centralwidget)
         self.resultsLabel.setGeometry(QtCore.QRect(280, 20, 151, 20))
         self.resultsLabel.setObjectName("resultsLabel")
-        self.resultsTable = QtWidgets.QTableWidget(parent=self.centralwidget)
-        self.resultsTable.setEnabled(True)
-        self.resultsTable.setGeometry(QtCore.QRect(280, 50, 700, 560))
-        self.resultsTable.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustIgnored)
-        self.resultsTable.setShowGrid(True)
-        self.resultsTable.setGridStyle(QtCore.Qt.PenStyle.SolidLine)
-        self.resultsTable.setObjectName("resultsTable")
-        self.resultsTable.setColumnCount(2)
-        self.resultsTable.setRowCount(0)
+        self.R1_Table = QtWidgets.QTableWidget(parent=self.centralwidget)
+        self.R1_Table.setEnabled(True)
+        self.R1_Table.setGeometry(QtCore.QRect(280, 50, 350, 560))
+        self.R1_Table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustIgnored)
+        self.R1_Table.setShowGrid(True)
+        self.R1_Table.setGridStyle(QtCore.Qt.PenStyle.SolidLine)
+        self.R1_Table.setObjectName("R1_Table")
+        self.R1_Table.setColumnCount(1)
+        self.R1_Table.setRowCount(0)
         item = QtWidgets.QTableWidgetItem()
-        self.resultsTable.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.resultsTable.setHorizontalHeaderItem(1, item)
-        self.resultsTable.horizontalHeader().setVisible(True)
-        self.resultsTable.horizontalHeader().setCascadingSectionResizes(False)
-        self.resultsTable.horizontalHeader().setDefaultSectionSize(349)
-        self.resultsTable.horizontalHeader().setMinimumSectionSize(43)
+        self.R1_Table.setHorizontalHeaderItem(0, item)
+        self.R1_Table.horizontalHeader().setVisible(True)
+        self.R1_Table.horizontalHeader().setCascadingSectionResizes(False)
+        self.R1_Table.horizontalHeader().setDefaultSectionSize(349)
+        self.R1_Table.horizontalHeader().setMinimumSectionSize(43)
         self.R1_Label = QtWidgets.QLabel(parent=self.centralwidget)
         self.R1_Label.setGeometry(QtCore.QRect(20, 390, 41, 20))
         self.R1_Label.setObjectName("R1_Label")
@@ -98,9 +97,47 @@ class Ui_MainWindow(QObject):
         self.comboBox_R2 = QtWidgets.QComboBox(parent=self.centralwidget)
         self.comboBox_R2.setGeometry(QtCore.QRect(60, 435, 201, 31))
         self.comboBox_R2.setObjectName("comboBox_R2")
+        self.R2_Table = QtWidgets.QTableWidget(parent=self.centralwidget)
+        self.R2_Table.setEnabled(True)
+        self.R2_Table.setGeometry(QtCore.QRect(635, 50, 350, 560))
+        self.R2_Table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustIgnored)
+        self.R2_Table.setShowGrid(True)
+        self.R2_Table.setGridStyle(QtCore.Qt.PenStyle.SolidLine)
+        self.R2_Table.setObjectName("R2_Table")
+        self.R2_Table.setColumnCount(1)
+        self.R2_Table.setRowCount(0)
+        item = QtWidgets.QTableWidgetItem()
+        self.R2_Table.setHorizontalHeaderItem(0, item)
+        self.R2_Table.horizontalHeader().setVisible(True)
+        self.R2_Table.horizontalHeader().setCascadingSectionResizes(False)
+        self.R2_Table.horizontalHeader().setDefaultSectionSize(349)
+        self.R2_Table.horizontalHeader().setMinimumSectionSize(43)
+        self.finalVoltageRatioBox = QtWidgets.QPlainTextEdit(parent=self.centralwidget)
+        self.finalVoltageRatioBox.setGeometry(QtCore.QRect(1010, 570, 175, 40))
+        self.finalVoltageRatioBox.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
+        self.finalVoltageRatioBox.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.finalVoltageRatioBox.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.finalVoltageRatioBox.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustIgnored)
+        self.finalVoltageRatioBox.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByKeyboard|QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.finalVoltageRatioBox.setObjectName("finalVoltageRatioBox")
+        self.devianceBox = QtWidgets.QPlainTextEdit(parent=self.centralwidget)
+        self.devianceBox.setGeometry(QtCore.QRect(1010, 480, 175, 40))
+        self.devianceBox.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
+        self.devianceBox.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.devianceBox.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.devianceBox.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.devianceBox.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByKeyboard|QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.devianceBox.setObjectName("devianceBox")
+        self.devianceLabel = QtWidgets.QLabel(parent=self.centralwidget)
+        self.devianceLabel.setGeometry(QtCore.QRect(1010, 455, 140, 20))
+        self.devianceLabel.setObjectName("devianceLabel")
+        self.finalVoltageRatioLabel = QtWidgets.QLabel(parent=self.centralwidget)
+        self.finalVoltageRatioLabel.setGeometry(QtCore.QRect(1010, 545, 140, 20))
+        self.finalVoltageRatioLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeading|QtCore.Qt.AlignmentFlag.AlignLeft|QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.finalVoltageRatioLabel.setObjectName("finalVoltageRatioLabel")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(parent=MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1004, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1200, 25))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(parent=MainWindow)
@@ -111,7 +148,7 @@ class Ui_MainWindow(QObject):
 
         self.newCombo_R1_value = False
         self.newCombo_R2_value = False
-
+        
         self.resistorCategoriesList.itemSelectionChanged.connect(self.resistorCategoryChanged)
         self.inStockCheckBox.stateChanged.connect(self.inStockSelectionChanged)
         self.rohsCompliantCheckBox.stateChanged.connect(self.rohsSelectionChanged)
@@ -126,7 +163,7 @@ class Ui_MainWindow(QObject):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Pick-a-Res: Voltage Divider Calculator"))
         __sortingEnabled = self.resistorCategoriesList.isSortingEnabled()
         self.resistorCategoriesList.setSortingEnabled(False)
         item = self.resistorCategoriesList.item(0)
@@ -145,23 +182,24 @@ class Ui_MainWindow(QObject):
         self.resistorCategoriesLabel.setText(_translate("MainWindow", "Resistor Categories"))
         self.inStockCheckBox.setText(_translate("MainWindow", "In Stock"))
         self.relationInputLabel.setText(_translate("MainWindow", "Voltage Ratio"))
-        self.approxValueLabel.setText(_translate("MainWindow", "Approx. value for resistances"))
+        self.combosLabel.setText(_translate("MainWindow", "Pick one of the resistances"))
         self.rohsCompliantCheckBox.setText(_translate("MainWindow", "RoHS Compliant"))
         self.searchButton.setText(_translate("MainWindow", "Search"))
         self.filtersButton.setText(_translate("MainWindow", "Filters"))
         self.resultsLabel.setText(_translate("MainWindow", "Results"))
-        item = self.resultsTable.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "First Resistor"))
-        item = self.resultsTable.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "Second Resistor"))
+        item = self.R1_Table.horizontalHeaderItem(0)
+        item.setText(_translate("MainWindow", "R1"))
         self.R1_Label.setText(_translate("MainWindow", "R1 = "))
         self.L2_Label.setText(_translate("MainWindow", "R2 = "))
-
+        item = self.R2_Table.horizontalHeaderItem(0)
+        item.setText(_translate("MainWindow", "R2"))
+        self.devianceLabel.setText(_translate("MainWindow", "Deviance"))
+        self.finalVoltageRatioLabel.setText(_translate("MainWindow", "Final Voltage Ratio"))
+    
     #####
     resistorCategorySignal = Signal(int)
     
     def resistorCategoryChanged(self):
-    
         sel = self.resistorCategoriesList.selectedItems()[0]
         match sel.text():
             case 'Chassis Mount Resistors':
@@ -225,7 +263,6 @@ class Ui_MainWindow(QObject):
     searchSignal = Signal()
     
     def searchInitiated(self):
-
         self.searchSignal.emit()
 
     #####
@@ -237,6 +274,7 @@ class Ui_MainWindow(QObject):
 
     @Slot(list)
     def onResistorValuesCalculated(self, arg):
+        self.statusbar.showMessage('API access completed', 5000)
         self.comboBox_R1.clear()
         self.comboBox_R2.clear()
         for value in arg:
@@ -244,6 +282,25 @@ class Ui_MainWindow(QObject):
             self.comboBox_R1.setCurrentIndex(-1)
             self.comboBox_R2.addItem(value)
             self.comboBox_R2.setCurrentIndex(-1)
+
+    @Slot(dict, dict)
+    def buildTables(self, r1, r2):
+        self.statusbar.showMessage('Building the tables', 0)
+        self.R1_Table.setRowCount(5)
+        self.R2_Table.setRowCount(5)
+        
+        for row in range(5):
+            product = r1['Products'][row]
+            item = QtWidgets.QTableWidgetItem(product['Description']['ProductDescription'] + " (" + product['Parameters'][0]['ValueText'] + ")")
+            self.R1_Table.setItem(row, 0, item)
+        
+        for row in range(5):
+            product = r2['Products'][row]
+            item = QtWidgets.QTableWidgetItem(product['Description']['ProductDescription'] + " (" + product['Parameters'][0]['ValueText'] + ")")
+            self.R2_Table.setItem(row, 0, item)
+
+        self.statusbar.showMessage('Table building completed', 5000)
+
 
 if __name__ == "__main__":
     import sys

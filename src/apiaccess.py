@@ -1,5 +1,3 @@
-import json
-from enum import Enum
 from PySide6.QtCore import QObject, Signal, Slot
 import requests
 from src.auth import requestToken
@@ -82,7 +80,6 @@ class ApiAccess(QObject):
 
     
     def singleAccess(self, dataJson):
-
         resistorData = requests.post(self.url, json=dataJson, headers=self.headers)
         return resistorData
     
@@ -129,8 +126,10 @@ class ApiAccess(QObject):
                 case _:
                     return "Error!"
 
-    def buildTable(self):
-        print(self.r2Data.json())
+    resistorDataSignal = Signal(dict, dict)
+
+    def sendOverResults(self):
+        self.resistorDataSignal.emit(self.r1Data.json(), self.r2Data.json())
 
     resistorValuesSignal = Signal(list)
 
@@ -204,8 +203,8 @@ class ApiAccess(QObject):
                 resistorValuesForSearch = self.resistancesInPOhmsDict[oldResistanceValue]
 
             r1 = self.resistance2NominalValueInPOhms(self.condo_R1_text, Round=True)
-            r1DataJson = self.dataJsonBuilder(keyword='resistor', limit=1, resistancesList=self.resistancesInPOhmsDict[r1])
-            r2DataJson = self.dataJsonBuilder(keyword='resistor', limit=1, resistancesList=resistorValuesForSearch)
+            r1DataJson = self.dataJsonBuilder(keyword='resistor', limit=5, resistancesList=self.resistancesInPOhmsDict[r1])
+            r2DataJson = self.dataJsonBuilder(keyword='resistor', limit=5, resistancesList=resistorValuesForSearch)
             
             self.r1Data = self.singleAccess(dataJson=r1DataJson)
             self.r2Data = self.singleAccess(dataJson=r2DataJson)
@@ -234,13 +233,13 @@ class ApiAccess(QObject):
                 resistorValuesForSearch = self.resistancesInPOhmsDict[oldResistanceValue]
 
             r2 = self.resistance2NominalValueInPOhms(self.condo_R2_text, Round=True)
-            r1DataJson = self.dataJsonBuilder(keyword='resistor', limit=1, resistancesList=resistorValuesForSearch)
-            r2DataJson = self.dataJsonBuilder(keyword='resistor', limit=1, resistancesList=self.resistancesInPOhmsDict[r2])
+            r1DataJson = self.dataJsonBuilder(keyword='resistor', limit=5, resistancesList=resistorValuesForSearch)
+            r2DataJson = self.dataJsonBuilder(keyword='resistor', limit=5, resistancesList=self.resistancesInPOhmsDict[r2])
             
             self.r1Data = self.singleAccess(dataJson=r1DataJson)
             self.r2Data = self.singleAccess(dataJson=r2DataJson)
 
-        self.buildTable()
+        self.sendOverResults()
 
     @Slot()
     def onFiltersClicked(self):
